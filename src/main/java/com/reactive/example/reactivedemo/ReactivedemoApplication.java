@@ -1,26 +1,26 @@
 package com.reactive.example.reactivedemo;
 
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import rx.Observable;
 
-import javax.sound.midi.SysexMessage;
 import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootApplication
 public class ReactivedemoApplication {
-
+    // Main Method
     public static void main(String[] args) {
 
         Observable<Users> observable = new ReactivedemoApplication().getData(getUsers());
-        observable.subscribe(System.out::println,
+        observable.subscribe(System.out::println, // Callback from Subscribe.
                 throwable -> System.out.println(" Excpetion:- " + throwable),
                 () -> System.out.println("Completed")
         );
     }
 
+    // Observable Interface to the Model.
     Observable<Users> getData(final List<Users> usersList) {
+        // Creating an Observable Pattern with a Subscriber.
         return Observable.create(
                 subscriber -> {
                     if (!subscriber.isUnsubscribed()) {
@@ -28,6 +28,7 @@ public class ReactivedemoApplication {
                                 users -> {
                                     subscriber.onNext(users);
                                     sleep(10000);
+                                    subscriber.onError(new RuntimeException("Something Wrong!"));
                                 }
                         );
                     }
@@ -35,6 +36,7 @@ public class ReactivedemoApplication {
                 });
     }
 
+    // Thread Sleep
     void sleep(Integer time) {
         try {
             Thread.sleep(time);
@@ -43,6 +45,7 @@ public class ReactivedemoApplication {
         }
     }
 
+    //Static List
     static List<Users> getUsers() {
         List<Users> users = new ArrayList<>();
         users.add(new Users("BOB", "Allen"));
